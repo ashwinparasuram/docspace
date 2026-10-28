@@ -1,0 +1,24 @@
+# Caddy reverse proxy for DocSpace.
+# - Serves the app on $APP_DOMAIN with automatic HTTPS (use "localhost" for a local self-signed cert,
+#   or ":80" to disable TLS on a LAN).
+# - Issues certificates on demand for custom documentation domains, but only after DocSpace confirms
+#   the domain is verified (the /internal/tls-check endpoint).
+{
+	on_demand_tls {
+		ask http://app:4000/internal/tls-check
+	}
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:4000
+}
+
+# Custom domains connected to published spaces
+https:// {
+	tls {
+		on_demand
+	}
+	encode zstd gzip
+	reverse_proxy app:4000
+}

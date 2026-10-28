@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-white text-base text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+  }
+  ::selection {
+    @apply bg-brand-100 text-slate-900 dark:bg-brand-800 dark:text-white;
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.011em;
+  }
+  :focus-visible {
+    @apply outline-none;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex h-8 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors duration-100 disabled:pointer-events-none disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-brand-500/40;
+  }
+  .btn-primary {
+    @apply btn bg-slate-900 text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white;
+  }
+  .btn-accent {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-100;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .input {
+    @apply block w-full rounded-md border border-slate-200 bg-white px-2.5 py-[5px] text-sm text-slate-900 transition-colors placeholder:text-slate-400 hover:border-slate-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 disabled:bg-slate-50 disabled:text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-slate-700 dark:focus:border-brand-400 dark:disabled:bg-slate-900/50;
+  }
+  textarea.input {
+    @apply py-2;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300;
+  }
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/60;
+  }
+  .muted {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+  .kbd {
+    @apply inline-flex h-5 items-center rounded border border-slate-200 bg-slate-50 px-1.5 font-sans text-2xs font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400;
+  }
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400;
+  }
+  .page-title {
+    @apply text-xl font-semibold tracking-tight text-slate-900 dark:text-white;
+  }
+}
+
+/* ---------------- Editor (ProseMirror / TipTap) ---------------- */
+.ds-editor .ProseMirror {
+  @apply min-h-[50vh] text-slate-800 outline-none dark:text-slate-200;
+  font-size: 15.5px;
+  line-height: 1.72;
+  padding-bottom: 30vh;
+}
+.ds-editor .ProseMirror > * + * {
+  margin-top: 0.75em;
+}
+.ds-editor .ProseMirror p.is-editor-empty:first-child::before,
+.ds-editor .ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-slate-400 dark:text-slate-500;
+}
+.ds-editor .ProseMirror h1 { @apply mt-10 text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-900 dark:text-white; }
+.ds-editor .ProseMirror h2 { @apply mt-9 text-[1.375rem] font-semibold leading-snug tracking-tight text-slate-900 dark:text-white; }
+.ds-editor .ProseMirror h3 { @apply mt-7 text-[1.125rem] font-semibold text-slate-900 dark:text-white; }
+.ds-editor .ProseMirror h4 { @apply mt-6 text-[1rem] font-semibold text-slate-900 dark:text-white; }
+.ds-editor .ProseMirror p { @apply text-slate-700 dark:text-slate-300; }
+.ds-editor .ProseMirror a { @apply cursor-pointer text-brand-700 underline decoration-brand-300/70 underline-offset-[3px] dark:text-brand-300 dark:decoration-brand-700; }
+.ds-editor .ProseMirror ul { @apply list-disc pl-6; }
+.ds-editor .ProseMirror ol { @apply list-decimal pl-6; }
+.ds-editor .ProseMirror li > p { @apply my-0.5; }
+.ds-editor .ProseMirror ul[data-type='taskList'] { @apply list-none pl-1; }
+.ds-editor .ProseMirror ul[data-type='taskList'] li { @apply flex items-start gap-2; }
+.ds-editor .ProseMirror ul[data-type='taskList'] li > label { @apply mt-1.5 select-none; }
+.ds-editor .ProseMirror ul[data-type='taskList'] li > label input { @apply h-4 w-4 accent-brand-600; }
+.ds-editor .ProseMirror ul[data-type='taskList'] li > div { @apply flex-1; }
+.ds-editor .ProseMirror blockquote { @apply border-l-2 border-slate-300 pl-4 text-slate-600 dark:border-slate-700 dark:text-slate-400; }
+.ds-editor .ProseMirror code { @apply rounded border border-slate-200 bg-slate-50 px-1 py-px font-mono text-[0.84em] text-slate-800 dark:border-slate-800 dark:bg-slate-800/70 dark:text-slate-200; }
+.ds-editor .ProseMirror pre { @apply overflow-x-auto bg-slate-50 p-4 font-mono text-[13px] leading-6 text-slate-800 dark:bg-slate-950 dark:text-slate-200; }
+.ds-editor .ProseMirror pre code { @apply border-0 bg-transparent p-0 text-inherit; }
+.ds-editor .ProseMirror hr { @apply my-6 border-slate-200 dark:border-slate-800; }
+.ds-editor .ProseMirror img { @apply mx-auto max-w-full rounded-md border border-slate-200 dark:border-slate-800; }
+.ds-editor .ProseMirror img.ProseMirror-selectednode { @apply ring-2 ring-brand-500; }
+.ds-editor .ProseMirror mark { @apply rounded bg-yellow-200/70 px-0.5 dark:bg-yellow-500/30 dark:text-inherit; }
+.ds-editor .ProseMirror table { @apply my-5 w-full table-fixed border-collapse text-[14px]; }
+.ds-editor .ProseMirror td,
+.ds-editor .ProseMirror th { @apply relative min-w-[80px] border border-slate-200 px-3 py-2 align-top dark:border-slate-700; }
+.ds-editor .ProseMirror th { @apply bg-slate-50 text-left font-semibold text-slate-900 dark:bg-slate-900 dark:text-white; }
+.ds-editor .ProseMirror td p, .ds-editor .ProseMirror th p { @apply my-0; }
+.ds-editor .ProseMirror .selectedCell::after { content: ''; @apply pointer-events-none absolute inset-0 bg-brand-500/15; }
+.ds-editor .ProseMirror .column-resize-handle { @apply pointer-events-none absolute -right-0.5 bottom-0 top-0 w-1 bg-brand-500; }
+.ds-editor .ProseMirror.resize-cursor { cursor: col-resize; }
+.ds-editor .ProseMirror .tableWrapper { @apply overflow-x-auto; }
+.ds-editor .ProseMirror .comment-highlight { @apply cursor-pointer border-b border-amber-400 bg-amber-100/50 dark:bg-amber-400/15; }
+.ds-editor .ProseMirror .comment-highlight.active { @apply bg-amber-200 dark:bg-amber-500/40; }
+.ds-editor .ProseMirror .ProseMirror-gapcursor:after { @apply border-t-slate-900 dark:border-t-white; }
+
+/* Collaboration carets */
+.collaboration-cursor__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  word-break: normal;
+  pointer-events: none;
+}
+.collaboration-cursor__label {
+  position: absolute;
+  top: -1.45em;
+  left: -1px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  user-select: none;
+  color: #fff;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+}
+
+/* highlight.js tokens in the editor (light/dark) */
+.hljs-comment, .hljs-quote { color: #6a737d; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-type { color: #d73a49; }
+.hljs-string, .hljs-attr, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #032f62; }
+.hljs-number, .hljs-literal, .hljs-variable, .hljs-template-variable { color: #005cc5; }
+.hljs-title, .hljs-section, .hljs-built_in { color: #6f42c1; }
+.hljs-deletion { color: #b31d28; }
+.hljs-meta { color: #735c0f; }
+.dark .hljs-keyword, .dark .hljs-selector-tag, .dark .hljs-type { color: #ff7b72; }
+.dark .hljs-string, .dark .hljs-attr, .dark .hljs-symbol, .dark .hljs-bullet, .dark .hljs-addition { color: #a5d6ff; }
+.dark .hljs-number, .dark .hljs-literal, .dark .hljs-variable, .dark .hljs-template-variable { color: #79c0ff; }
+.dark .hljs-title, .dark .hljs-section, .dark .hljs-built_in { color: #d2a8ff; }
+.dark .hljs-comment, .dark .hljs-quote { color: #8b949e; }
+
+.scrollbar-thin { scrollbar-width: thin; }

@@ -1,0 +1,21 @@
+# systemd unit for running DocSpace natively on Linux.
+#   sudo cp deploy/docspace.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now docspace
+[Unit]
+Description=DocSpace documentation platform
+After=network.target mysql.service mariadb.service redis-server.service
+
+[Service]
+Type=simple
+User=docspace
+WorkingDirectory=/opt/docspace
+EnvironmentFile=/opt/docspace/.env
+ExecStart=/usr/bin/node apps/server/dist/index.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/opt/docspace/data
+
+[Install]
+WantedBy=multi-user.target
