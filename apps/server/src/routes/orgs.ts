@@ -253,7 +253,7 @@ orgsRouter.get(
   ah(async (req, res) => {
     const { org } = await requireOrg(req, req.params.org);
     const spaces = await query(
-      `SELECT s.id, s.name, s.slug, s.description, s.icon, s.visibility, s.published, s.custom_domain, s.settings, s.org_id, s.updated_at,
+      `SELECT s.id, s.name, s.slug, s.description, s.icon, s.visibility, s.published, s.custom_domain, s.settings, s.theme, s.org_id, s.updated_at,
          (SELECT COUNT(*) FROM pages p JOIN branches b ON b.id=p.branch_id WHERE b.space_id=s.id AND b.is_main=1 AND p.deleted=0) AS page_count,
          (SELECT COUNT(*) FROM change_requests c WHERE c.space_id=s.id AND c.status='open') AS open_crs
        FROM spaces s WHERE s.org_id=? ORDER BY s.name`,
@@ -262,7 +262,7 @@ orgsRouter.get(
     const visible = [];
     for (const s of spaces) {
       const role = await getSpaceRole(req.user!.id, req.user!.is_admin, s);
-      if (role) visible.push({ ...s, settings: undefined, role });
+      if (role) visible.push({ ...s, settings: undefined, theme: undefined, logoUrl: json<{ logoUrl?: string }>(s.theme, {}).logoUrl || null, role });
     }
     res.json(visible);
   }),

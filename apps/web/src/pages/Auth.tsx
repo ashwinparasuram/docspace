@@ -72,8 +72,8 @@ export function LoginPage() {
     <AuthCard title="Sign in" subtitle="Welcome back to your documentation workspace.">
       <form onSubmit={submit} className="space-y-3">
         <div>
-          <label className="label">Email</label>
-          <input className="input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+          <label className="label">Email or username</label>
+          <input className="input" type="text" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
         </div>
         <div>
           <label className="label">Password</label>

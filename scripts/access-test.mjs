@@ -31,7 +31,7 @@ function expect(label, cond, detail) {
   if (!cond) failures++;
 }
 
-const login = await req('/api/auth/login', { method: 'POST', body: { email: 'admin@docspace.local', password: 'ChangeMe123' } });
+const login = await req('/api/auth/login', { method: 'POST', body: { email: 'admin', password: 'password' } });
 const member = login.cookies.join('; ');
 const spaces = JSON.parse((await req('/api/orgs/acme/spaces', { cookie: member })).text);
 const space = spaces.find((s) => s.slug === 'api');

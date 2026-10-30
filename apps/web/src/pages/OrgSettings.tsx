@@ -430,7 +430,7 @@ function Webhooks({ org }: { org: any }) {
               className="btn-secondary px-2 py-1 text-xs"
               onClick={async () => {
                 const r = await api.post(`/orgs/${org.slug}/webhooks/${w.id}/test`);
-                toast(r.ok ? `Ping delivered (HTTP ${r.code})` : `Ping failed: ${r.code ?? r.body}`, r.ok ? 'success' : 'error');
+                toast(r.ok ? `Ping delivered (HTTP ${r.code})` : `Ping failed: ${r.code ? `receiver returned HTTP ${r.code}` : 'no response'}${r.body ? ` — ${String(r.body).slice(0, 160)}` : ''}`, r.ok ? 'success' : 'error');
                 await refresh();
               }}
             >

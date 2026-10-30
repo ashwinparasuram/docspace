@@ -73,14 +73,24 @@ function useSave(space: any) {
 function General({ space }: { space: any }) {
   const save = useSave(space);
   const [f, setF] = useState({ name: space.name, slug: space.slug, description: space.description || '', icon: space.icon || '' });
+  const [images, setImages] = useState({ logoUrl: space.theme?.logoUrl || '', faviconUrl: space.theme?.faviconUrl || '' });
+  const upload = async (key: 'logoUrl' | 'faviconUrl', file?: File) => {
+    if (!file) return;
+    const [u] = await uploadFiles(space.id, [file]);
+    setImages((cur) => ({ ...cur, [key]: u.url }));
+  };
   const s = space.settings;
   return (
     <>
       <Section title="Space details">
         <div className="space-y-3">
           <div className="flex gap-3">
-            <Field label="Icon">
-              <input className="input w-16 text-center" value={f.icon} maxLength={4} onChange={(e) => setF({ ...f, icon: e.target.value })} />
+            <Field label="Icon" hint={images.logoUrl ? 'Logo replaces the icon' : undefined}>
+              {images.logoUrl ? (
+                <img src={images.logoUrl} alt="" className="h-9 w-16 rounded border border-slate-200 object-contain dark:border-slate-700" />
+              ) : (
+                <input className="input w-16 text-center" value={f.icon} maxLength={4} onChange={(e) => setF({ ...f, icon: e.target.value })} />
+              )}
             </Field>
             <div className="flex-1">
               <Field label="Name">
@@ -94,7 +104,36 @@ function General({ space }: { space: any }) {
           <Field label="Description">
             <textarea className="input" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} />
           </Field>
-          <button className="btn-primary" onClick={() => save({ ...f, icon: f.icon || null })}>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Logo" hint="Shown instead of the icon in the app and on the published site.">
+              <div className="flex items-center gap-2">
+                <label className="btn-secondary cursor-pointer">
+                  <Upload className="h-4 w-4" /> {images.logoUrl ? 'Replace' : 'Upload'}
+                  <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(e) => upload('logoUrl', e.target.files?.[0])} />
+                </label>
+                {images.logoUrl && (
+                  <button className="btn-ghost text-xs" onClick={() => setImages({ ...images, logoUrl: '' })}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            </Field>
+            <Field label="Favicon" hint="Browser tab icon for the published site.">
+              <div className="flex items-center gap-2">
+                {images.faviconUrl && <img src={images.faviconUrl} alt="" className="h-6 w-6 object-contain" />}
+                <label className="btn-secondary cursor-pointer">
+                  <Upload className="h-4 w-4" /> {images.faviconUrl ? 'Replace' : 'Upload'}
+                  <input type="file" accept="image/png,image/x-icon,image/vnd.microsoft.icon" className="hidden" onChange={(e) => upload('faviconUrl', e.target.files?.[0])} />
+                </label>
+                {images.faviconUrl && (
+                  <button className="btn-ghost text-xs" onClick={() => setImages({ ...images, faviconUrl: '' })}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            </Field>
+          </div>
+          <button className="btn-primary" onClick={() => save({ ...f, icon: f.icon || null, theme: images })}>
             Save
           </button>
         </div>
@@ -224,7 +263,7 @@ function Domain({ space }: { space: any }) {
   const qc = useQueryClient();
   const toast = useToast();
   const [domain, setDomain] = useState(space.custom_domain || '');
-  const [info, setInfo] = useState<{ verifyToken: string | null; cnameTarget: string } | null>(space.custom_domain ? { verifyToken: space.domain_verify_token, cnameTarget: new URL(space.siteUrl.startsWith('http') ? space.siteUrl : location.origin).hostname } : null);
+  const [info, setInfo] = useState<{ verifyToken: string | null; cnameTarget: string } | null>(space.custom_domain ? { verifyToken: space.domain_verify_token, cnameTarget: space.cnameTarget } : null);
   const [checks, setChecks] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const saveDomain = async (value: string | null) => {
@@ -361,6 +400,11 @@ function Theme({ space }: { space: any }) {
               <Upload className="h-4 w-4" /> Upload
               <input type="file" accept="image/png,image/x-icon,image/vnd.microsoft.icon" className="hidden" onChange={(e) => upload('faviconUrl', e.target.files?.[0])} />
             </label>
+            {t.faviconUrl && (
+              <button className="btn-ghost text-xs" onClick={() => setT({ ...t, faviconUrl: '' })}>
+                Remove
+              </button>
+            )}
           </div>
         </Field>
       </div>

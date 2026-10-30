@@ -4,8 +4,8 @@
  * Requires the demo data from `npm run seed`. Usage: node scripts/smoke-test.mjs [baseUrl]
  */
 const base = (process.argv[2] || process.env.BASE_URL || 'http://localhost:4000').replace(/\/$/, '');
-const email = process.env.SEED_EMAIL || 'admin@docspace.local';
-const password = process.env.SEED_PASSWORD || 'ChangeMe123';
+const email = process.env.SEED_EMAIL || 'admin';
+const password = process.env.SEED_PASSWORD || 'password';
 let cookie = '';
 let failures = 0;
 

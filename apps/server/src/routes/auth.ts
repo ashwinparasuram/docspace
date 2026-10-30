@@ -82,7 +82,8 @@ authRouter.post(
   }),
 );
 
-const loginSchema = z.object({ email: z.string().trim().toLowerCase().email(), password: z.string().min(1).max(200) });
+// Accepts an email or a plain username such as the seeded "admin" account.
+const loginSchema = z.object({ email: z.string().trim().toLowerCase().min(1).max(255), password: z.string().min(1).max(200) });
 
 authRouter.post(
   '/login',

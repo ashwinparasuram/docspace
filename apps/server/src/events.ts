@@ -52,8 +52,28 @@ export async function notify(userIds: string[], n: { type: string; title: string
 
 const MAX_ATTEMPTS = 6;
 
+/**
+ * Chat platforms (Discord, Slack, Teams, Google Chat) reject arbitrary JSON with HTTP 400 and need a
+ * message field, so wrap the event in their expected shape. Everything else gets the raw payload.
+ */
+function bodyFor(url: string, event: string, payload: any): string {
+  const raw = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  let host = '';
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return raw;
+  }
+  const data = (typeof payload === 'string' ? json<any>(payload, {}) : payload)?.data ?? {};
+  const subject = data.message || data.title || data.name || data.page?.title || data.space?.name || '';
+  const text = `[DocSpace] ${event}${subject ? ` — ${subject}` : ''}`;
+  if (/(^|\.)discord(app)?\.com$/.test(host)) return JSON.stringify({ content: text.slice(0, 2000), username: 'DocSpace' });
+  if (host === 'hooks.slack.com' || host === 'chat.googleapis.com' || /(^|\.)(webhook\.office|outlook\.office)\.com$/.test(host)) return JSON.stringify({ text });
+  return raw;
+}
+
 export async function deliver(delivery: any, hook: any): Promise<{ ok: boolean; code: number | null; body: string }> {
-  const body = typeof delivery.payload === 'string' ? delivery.payload : JSON.stringify(delivery.payload);
+  const body = bodyFor(hook.url, delivery.event, delivery.payload);
   const ts = Math.floor(Date.now() / 1000).toString();
   try {
     const res = await fetch(hook.url, {
@@ -76,15 +96,26 @@ export async function deliver(delivery: any, hook: any): Promise<{ ok: boolean; 
   }
 }
 
+// SKIP LOCKED needs MySQL 8+ / MariaDB 10.6+. Older servers reject it as a syntax error, so fall back to a
+// plain FOR UPDATE (still correct, other workers just wait instead of skipping).
+let skipLocked = true;
+
 async function processBatch() {
   const conn = await pool.getConnection();
   let claimed: any[] = [];
   try {
     await conn.beginTransaction();
-    const [rows] = await conn.query(
-      `SELECT d.*, w.url, w.secret FROM webhook_deliveries d JOIN webhooks w ON w.id=d.webhook_id
-       WHERE d.status='pending' AND d.next_attempt_at <= NOW(3) ORDER BY d.next_attempt_at LIMIT 20 FOR UPDATE SKIP LOCKED`,
-    );
+    const claimSql = (lock: string) => `SELECT d.*, w.url, w.secret FROM webhook_deliveries d JOIN webhooks w ON w.id=d.webhook_id
+       WHERE d.status='pending' AND d.next_attempt_at <= NOW(3) ORDER BY d.next_attempt_at LIMIT 20 ${lock}`;
+    let rows: unknown;
+    try {
+      [rows] = await conn.query(claimSql(skipLocked ? 'FOR UPDATE SKIP LOCKED' : 'FOR UPDATE'));
+    } catch (err) {
+      if (!skipLocked || (err as { errno?: number }).errno !== 1064) throw err;
+      skipLocked = false;
+      logger.info('database does not support SKIP LOCKED; webhook worker using FOR UPDATE');
+      [rows] = await conn.query(claimSql('FOR UPDATE'));
+    }
     claimed = rows as any[];
     if (claimed.length) {
       await conn.query(`UPDATE webhook_deliveries SET status='sending', updated_at=NOW(3) WHERE id IN (?)`, [claimed.map((d) => d.id)]);

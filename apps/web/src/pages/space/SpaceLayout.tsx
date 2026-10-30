@@ -42,7 +42,7 @@ export default function SpaceLayout() {
     <div className="flex h-full flex-col">
       <div className="flex h-12 flex-none items-center gap-3 border-b border-slate-200 px-4 dark:border-slate-800">
         <Link to={`/o/${orgSlug}`} className="flex min-w-0 items-center gap-2 font-semibold">
-          <Monogram name={s.name} icon={s.icon} size={22} className="text-[11px]" />
+          <Monogram name={s.name} icon={s.icon} logo={s.theme?.logoUrl} size={22} className="text-[11px]" />
           <span className="truncate">{s.name}</span>
         </Link>
         <nav className="flex items-center gap-1 overflow-x-auto">

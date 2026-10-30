@@ -14,7 +14,7 @@ import { createBranch, createPage, getMainBranch, updateBranchFromMain, branchCh
 import { markdownToJson } from '../content/prosemirror.js';
 import { TEMPLATES, type TemplatePage } from '../content/templates.js';
 import { bumpContentVersion } from '../site/data.js';
-import { invalidateSiteLookups } from '../site/routes.js';
+import { invalidateSiteLookups, siteUrl } from '../site/routes.js';
 import { parseSpec, deref, specToPages, overviewDoc } from '../content/openapi.js';
 import { reindexSpace } from '../search/indexer.js';
 
@@ -98,12 +98,12 @@ spacesRouter.get(
        FROM branches b LEFT JOIN users u ON u.id=b.created_by WHERE b.space_id=? AND (b.is_main=1 OR b.status='open') ORDER BY b.is_main DESC, b.created_at DESC`,
       [space.id],
     );
-    const siteUrl = space.custom_domain && space.domain_verified ? `https://${space.custom_domain}` : `${config.appUrl}/s/${org!.slug}/${space.slug}`;
     res.json({
       ...publicSpace(space),
       role,
       org,
-      siteUrl,
+      siteUrl: siteUrl(space, org!.slug),
+      cnameTarget: config.appHost.split(':')[0],
       branches: branches.map((b) => ({ ...b, is_main: !!b.is_main, canEdit: canEditBranch(space, b, role) })),
     });
   }),
@@ -223,6 +223,8 @@ spacesRouter.put(
     await exec('UPDATE spaces SET custom_domain=?, domain_verified=0, domain_verify_token=? WHERE id=?', [domain, token, space.id]);
     const org = await one('SELECT slug FROM organizations WHERE id=?', [space.org_id]);
     await invalidateSiteLookups(space, org!.slug);
+    // Also drop any cached "unknown domain" lookup for the new domain.
+    if (domain) await invalidateSiteLookups({ ...space, custom_domain: domain }, org!.slug);
     await audit(req, space.org_id, 'space.domain_changed', { type: 'space', id: space.id }, { domain });
     res.json({ ok: true, verifyToken: token, cnameTarget: config.appHost.split(':')[0] });
   }),

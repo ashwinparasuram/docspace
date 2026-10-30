@@ -58,8 +58,8 @@ After running `npm run seed` (see [Quick start](#quick-start)), sign in at **htt
 
 | Field | Value |
 | --- | --- |
-| **Email** | `admin@docspace.local` |
-| **Password** | `ChangeMe123` |
+| **Username** | `admin` |
+| **Password** | `password` |
 
 This account is the instance administrator and owner of the demo organization **Acme Inc.**, which contains two published sites:
 

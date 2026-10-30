@@ -163,6 +163,13 @@ async function spaceBySlug(orgSlug: string, spaceSlug: string) {
   return row ? getSpaceCached(row.id) : null;
 }
 
+/** Public URL of a space's site: its verified custom domain (same scheme/port as the app) or the /s/ path. */
+export function siteUrl(space: { slug: string; custom_domain?: string | null; domain_verified?: unknown }, orgSlug: string) {
+  if (!space.custom_domain || !space.domain_verified) return `${config.appUrl}/s/${orgSlug}/${space.slug}`;
+  const app = new URL(config.appUrl);
+  return `${app.protocol}//${space.custom_domain}${app.port ? `:${app.port}` : ''}`;
+}
+
 export function siteBase(space: any, org: { slug: string }, viaDomain: boolean) {
   return viaDomain ? '' : `/s/${org.slug}/${space.slug}`;
 }

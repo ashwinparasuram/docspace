@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { lookup } from 'node:dns/promises';
 import { z } from 'zod';
 import { ah, HttpError, isPrivateHost, notFound, parse } from '../util.js';
-import { requireSiteAccess } from '../site/routes.js';
+import { requireSiteAccess, siteUrl } from '../site/routes.js';
 import { searchSpace } from '../search/search.js';
 import { track } from '../analytics.js';
 import { aiEnabled, chatStream, type ChatMessage } from '../ai/provider.js';
@@ -190,6 +190,6 @@ publicRouter.get(
     const space = await requireSiteAccess(req, res, req.params.spaceId);
     if (!space) throw notFound('Site');
     const org = await one('SELECT slug FROM organizations WHERE id=?', [space.org_id]);
-    res.json({ id: space.id, name: space.name, url: space.custom_domain && space.domain_verified ? `https://${space.custom_domain}` : `${config.appUrl}/s/${org?.slug}/${space.slug}` });
+    res.json({ id: space.id, name: space.name, url: siteUrl(space, org?.slug ?? '') });
   }),
 );

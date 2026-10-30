@@ -13,8 +13,8 @@ import { logger } from '../logger.js';
 import { uuid } from '../util.js';
 import { DEMO_SPEC } from './demo-spec.js';
 
-const email = process.env.SEED_EMAIL || 'admin@docspace.local';
-const password = process.env.SEED_PASSWORD || 'ChangeMe123';
+const email = process.env.SEED_EMAIL || 'admin';
+const password = process.env.SEED_PASSWORD || 'password';
 
 async function main() {
   await runMigrations();

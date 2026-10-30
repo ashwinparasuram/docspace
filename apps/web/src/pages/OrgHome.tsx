@@ -110,7 +110,7 @@ export default function OrgHome() {
               {list.map((s) => (
                 <div key={s.id} className="group grid grid-cols-[minmax(0,1fr)_120px_80px_110px] items-center gap-4 border-b border-slate-100 px-4 py-3 last:border-0 hover:bg-slate-50 dark:border-slate-800/70 dark:hover:bg-slate-800/40">
                   <Link to={`/o/${orgSlug}/s/${s.id}`} className="flex min-w-0 items-center gap-3">
-                    <Monogram name={s.name} icon={s.icon} size={30} />
+                    <Monogram name={s.name} icon={s.icon} logo={s.logoUrl} size={30} />
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium text-slate-900 group-hover:underline dark:text-white">{s.name}</span>
                       <span className="muted block truncate text-xs">{s.description || 'No description'}</span>

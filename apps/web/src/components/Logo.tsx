@@ -21,7 +21,8 @@ export function Logo({ className, size = 22 }: { className?: string; size?: numb
 }
 
 /** Square monogram used for spaces and organizations without an uploaded icon. */
-export function Monogram({ name, icon, size = 24, className }: { name: string; icon?: string | null; size?: number; className?: string }) {
+export function Monogram({ name, icon, logo, size = 24, className }: { name: string; icon?: string | null; logo?: string | null; size?: number; className?: string }) {
+  if (logo) return <img src={logo} alt="" className={cn('flex-none rounded-md object-contain', className)} style={{ width: size, height: size }} />;
   return (
     <span
       className={cn('inline-flex flex-none items-center justify-center rounded-md border border-slate-200 bg-slate-50 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300', className)}
